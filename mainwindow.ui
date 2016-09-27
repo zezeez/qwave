@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>858</width>
+    <height>706</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>51</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>电压/V</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>220</y>
+      <width>51</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>强电流/A</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>420</y>
+      <width>51</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>弱电流/A</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>180</y>
+      <width>51</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>时间/s</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>380</y>
+      <width>51</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>时间/s</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>390</x>
+      <y>570</y>
+      <width>51</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>时间/s</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>50</y>
+      <width>72</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>1路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>2路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>3路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>4路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>5路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>6路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>7路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>8路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>9路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>10路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>11路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>12路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>13路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>14路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>15路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>16路</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>20</y>
+      <width>51</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择：</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_2">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>250</y>
+      <width>72</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>1路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>2路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>3路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>4路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>5路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>6路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>7路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>8路</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>220</y>
+      <width>51</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择：</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_3">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>450</y>
+      <width>72</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>1路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>2路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>3路</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>4路</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>420</y>
+      <width>51</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>选择：</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="close">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>620</y>
+      <width>80</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>退出</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>620</y>
+      <width>80</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>载入文件</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>620</y>
+      <width>80</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>保存</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>858</width>
+     <height>19</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
