@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui widgets charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,17 +12,23 @@ TARGET = qwave
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
+SOURCES += main.cpp \
         mainwindow.cpp \
-    udphandle.cpp \
-    fileoperate.cpp
+    fileoperate.cpp \
+    udpprocess.cpp \
+    chartview.cpp \
+    chart.cpp
 
 HEADERS  += mainwindow.h \
-    udphandle.h \
-    fileoperate.h
+    fileoperate.h \
+    udpprocess.h \
+    chart.h \
+    chartview.h
 
 FORMS    += mainwindow.ui
 
 QT += network
 
-QT += widgets
+#INCLUDEPATH += /usr/include/qwt6
+
+#LIBS += -L/usr/lib64 -lqwt

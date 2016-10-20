@@ -5,11 +5,23 @@
 #include <QPainter>
 #include <QTimer>
 #include <QTimerEvent>
-#include <QPaintEvent>
 #include <QByteArray>
 #include <QCloseEvent>
+#include <QtCharts>
+#include <QComboBox>
+#include <QList>
+#include <QThread>
+#include "udpprocess.h"
+#include "fileoperate.h"
 
-#define DATA_ARRAY_SIZE 1000
+QT_CHARTS_USE_NAMESPACE
+
+#define HISTORY 30
+#define MAXDRAWPOINTS 610
+#define MAXREMOVEPOINTS 600
+#define MAXSTEP 10
+#define MAXAXISX 100
+#define MAXAXISY 10
 
 namespace Ui {
 class MainWindow;
@@ -23,70 +35,41 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     explicit MainWindow(qreal width,qreal height,QObject *parent=0);
     ~MainWindow();
-
 private:
+    void initAxis();
+    void initCharts();
+    void setCharts();
+    void customUi();
+protected:
+    void timerEvent(QTimerEvent *);
+    void showWave();
+signals:
+    void readyForWrite(QList<QPointF> &,QList<QPointF> &,QList<QPointF> &);
+    //void readyForDraw(QList<QPointF> &/*,QLineSeries &,MainWindow &*/);
+    void readyForRead(QList<QPointF> &);
+private slots:
+    void comboBoxChoseChanged(int);
+    void comboBox2ChoseChanged(int);
+    void comboBox3ChoseChanged(int);
+    void onDraw();      //绘制点坐标
+    //void loadFile(QList<QPointF> &);
+    void saveFileNow();
+    void loadFileNow();
+private:
+    QThread udpDatagram;
+protected:
+    struct showType{
+        QChart *cView;
+        QList<QPointF> axiData;
+    };
+    showType volatoge,strongelectric,weakelectric;      //电压 强电流 弱电流
+    //int dataCount;
+    //int timeData[HISTORY];
+    UdpProcess udpData;
+    QLineSeries *line1,*line2,*line3;
+    QValueAxis *vaxisX,*vaxisY,*saxisX,*saxisY,*waxisX,*waxisY;
+    FileOperate file;
     Ui::MainWindow *ui;
-
-/*public:
-    void paintEvent(QPaintEvent *e);
-    void processdata();
-
-private:
-    QPainter *painter;
-    int column;
-
-    QPen m_scaleLinePen;
-    QPen m_waveDataPen;
-
-    QRect rect;
-    bool flag1;
-    QPoint point[2];
-    int height,width;
-    QPoint initPoint;
-    int timerId;
-    qreal x;
-
-    unsigned int gridnum;
-    int *pointt;
-    QString strSelectFileData;
-    int flag;
-    int n;
-    int val;
-    bool flag_load;
-    bool display_wave_flag;
-    int *num;
-
-    int m_pen_width;
-    int m_other_pen_width;
-    int valy;
-    int rect_height;
-    int *sum1,*sum2,*sum3,*sum4;
-    int left_data;
-    bool high_data;
-    bool start;
-
-    QTimer *time;
-
-public:
-    QByteArray temp;
-    void setXYCord();
-    void showGrid();
-
-    void setDefaultScaleLinePen();
-    void setDefaultWaveDataPen();
-    void setDefaultScope();
-    void realTimeWave();
-
-public slots:
-    void drawGridBtn();
-    void gridSpin();
-    void saveShowData(int *point);
-    void loadFile();
-    void showNumber();
-
-    void closeEvent(QCloseEvent *e);
-    void processShareFile(); */
-
 };
 
 #endif // MAINWINDOW_H

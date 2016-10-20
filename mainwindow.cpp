@@ -6,148 +6,294 @@
 #include <fstream>
 #include <QFileDialog>
 #include <QMessageBox>
-#include "udphandle.h"
+#include "udpprocess.h"
+#include <QtCharts/QChartView>
+#include <QtCharts/QLineSeries>
 
-#define WIDTH 1220
-#define D1 50
-#define D2 50
-#define D3 70
-#define D4 80
-#define READ_DATA false
-#define DISPLAY_DATA true
-
-typedef unsigned short uint16;
+QT_CHARTS_USE_NAMESPACE
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    Udphandle recv_data;
-    recv_data.initSocket();
     ui->setupUi(this);
-    //connect(ui->close,&QPushButton::clicked,this,QCoreApplication::exit(0));
+
+    setBackgroundRole(QPalette::Dark);
+    setAutoFillBackground(true);
+    setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    setFocusPolicy(Qt::StrongFocus);
+
+    //QChart *chart;
+
+    /*ui->lhLayout->addWidget(ui->label);
+    ui->lhLayout->addWidget(ui->volatoge);
+    ui->lhLayout->addWidget(ui->label_4);
+    ui->lhLayout->addWidget(ui->label_2);
+    ui->lhLayout->addWidget(ui->strongelectric);
+    ui->lhLayout->addWidget(ui->label_5);
+    ui->lhLayout->addWidget(ui->label_3);
+    ui->lhLayout->addWidget(ui->weakelectric);
+    ui->lhLayout->addWidget(ui->label_6);
+
+    ui->rhLayout->addWidget(ui->label_7);
+    ui->rhLayout->addWidget(ui->comboBox);
+    ui->rhLayout->addWidget(ui->label_8);
+    ui->rhLayout->addWidget(ui->comboBox_2);
+    ui->rhLayout->addWidget(ui->label_9);
+    ui->rhLayout->addWidget(ui->comboBox_3);
+
+    ui->rhLayout->addWidget(ui->loadfile);
+    ui->rhLayout->addWidget(ui->savefile);
+    ui->rhLayout->addWidget(ui->close);
+
+    ui->vLayout->addLayout(ui->lhLayout);
+    ui->vLayout->addLayout(ui->rhLayout);*/
+
+
+    //chart = new QChart();
+    /*volatoge.cView = ui->volatoge;
+    strongelectric.cView = ui->strongelectric;
+    weakelectric.cView = ui->weakelectric;*/
+
+    initCharts();
+    initAxis();
+    setCharts();
+    customUi();
+    //volatoge.cView->axisX()->setRange(1,10);
+    //volatoge.cView->axisY()->setRange(1,10);
+
+    //ui->volatoge->geometry();
+    //ui->strongelectric->geometry();
+    //ui->weakelectric->geometry();
+
+    /*for(int i=0;i<10;i++) {
+        line->append(i,sin(i));
+    }*/
+    /*QChart *chart=new QChart();
+    chart->addSeries(line);
+    chart->createDefaultAxes();
+    ui->volatoge->setChart(chart);*/
+
+    connect(ui->comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(comboBoxChoseChanged(int)));
+    connect(ui->comboBox_2,SIGNAL(currentIndexChanged(int)),this,SLOT(comboBox2ChoseChanged(int)));
+    connect(ui->comboBox_3,SIGNAL(currentIndexChanged(int)),this,SLOT(comboBox3ChoseChanged(int)));
+    connect(ui->comboBox_4,SIGNAL(currentIndexChanged(int)),&udpData,SLOT(sendIntr(int)));
+    connect(ui->loadfile,&QPushButton::clicked,this,&MainWindow::loadFileNow);
+    connect(ui->savefile,&QPushButton::clicked,this,&MainWindow::saveFileNow);
+    connect(this,&MainWindow::readyForWrite,&file,&FileOperate::saveFile);
+    connect(this,&MainWindow::readyForRead,&file,&FileOperate::loadFile);
     connect(ui->close,SIGNAL(clicked(bool)),this,SLOT(close()));
-    /*
-    rect=QRect(0,0,WIDTH,600);
-    pointt=new int[rect.width()];
-    height=rect.height();
-    width=rect.width();
-    flag_load=false;
-    high_data=false;
-    left_data=65535;
-    start=true;
 
-    column=DATA_ARRAY_SIZE;
-    valy=1;
-    rect_height=rect.height();
-    display_wave_flag=false;
+    //chart = new QChart
+    //connect(ui->close,&QPushButton::clicked,this,QCoreApplication::exit(0));
+    //qRegisterMetaType<QList<QPointF>&>("QList<QPointF>&");
 
-    m_pen_width=1;
-    m_other_pen_width=1;
+    //drawCurve *draw=new drawCurve;
+    //UdpProcess *pcs=new UdpProcess;
+    udpData.moveToThread(&udpDatagram);
+    //connect(&udpDatagram,&QThread::finished,&udpData,&QObject::deleteLater);
+    //connect(this,&MainWindow::readyForDraw,draw,&drawCurve::onDraw);
+    //connect(draw,&drawCurve::readyDraw,this,&MainWindow::onDraw);
+    udpDatagram.start();
 
-    flag1=false;
-    flag=0;
-    initPoint.setX(40);
-    initPoint.setY(20);
-    n=1;
-    val=2;
+    //for ( int i = 0; i < HISTORY; i++ )
+        //timeData[HISTORY - 1 - i] = i;
 
-    num=new int[DATA_ARRAY_SIZE];
-    memset(num,65535,sizeof(int)*DATA_ARRAY_SIZE);
-
-    sum1=new int[column/n];
-    sum2=new int[column-n];
-    sum3=new int[column/n];
-    sum4=new int[column/n];
-
-    //connect(ui->loadFileBtn,SIGNAL(clicked()),this,SLOT(loadFile()));
-    //connect(ui->showWaveBtn,SIGNAL(clicked()),this,SLOT(showNumber()));
-    //connect(ui->saveFileBtn,SIGNAL(clicked()),this,SLOT(saveShowData(int*))); */
+    startTimer(1000);  //1 second
 }
 
-/*void MainWindow::paintEvent(QPaintEvent *e)
+void MainWindow::initCharts()
 {
-    painter=new QPainter(this);
-    painter->translate(initPoint.x(),initPoint.y());
-    painter->begin(this);
-    painter->drawRect(rect);
-    painter->setPen(Qt::red);
-    setXYCord();
-    painter->fillRect(rect,QBrush(QColor(Qt::black),Qt::SolidPattern));
+    line1=new QLineSeries();
+    line1->setPen(QPen(Qt::green,1,Qt::SolidLine));
+    volatoge.cView = new QChart();
+   // volatoge.cView->setAnimationOptions(QChart::SeriesAnimations);
+    volatoge.cView->addSeries(line1);
+    volatoge.cView->createDefaultAxes();
 
-    realTimeWave();
-    painter->end();
+
+
+    line2=new QLineSeries();
+    line2->setPen(QPen(Qt::red,1,Qt::SolidLine));
+    strongelectric.cView = new QChart();
+    //strongelectric.cView->setAnimationOptions(QChart::SeriesAnimations);  //展示动画效果
+    strongelectric.cView->addSeries(line2);
+    strongelectric.cView->createDefaultAxes();
+
+
+    line3=new QLineSeries();
+    line3->setPen(QPen(Qt::blue,1,Qt::SolidLine));
+    weakelectric.cView = new QChart();
+    //weakelectric.cView->setAnimationOptions(QChart::SeriesAnimations);
+    weakelectric.cView->addSeries(line3);
+    weakelectric.cView->createDefaultAxes();
 }
 
-void MainWindow::setXYCord()
+void MainWindow::initAxis()
 {
-    //draw x
-    painter->setPen(QPen(Qt::blue));
-    for(int i=0;i<rect.width();i++) {
-        point[0].setX(i*10);
-        point[0].setY(height);
-        point[1].setX(i*10);
-        point[1].setY(height-3);
-        painter->drawLine(QPoint(point[0].x(),point[0].y()),QPoint(point[1].x(),point[1].y()));
-    }
-    painter->drawLine(QPoint(0,height),QPoint(width,height));
+    vaxisX=new QValueAxis;
+    vaxisX->setRange(1,MAXAXISX);
+    vaxisX->setLabelFormat(tr("%d"));
+    vaxisX->setTitleText(tr("时间/s"));
+    vaxisX->setGridLineVisible(false);   //显示网格
+    vaxisX->setMinorTickCount(4);
+    vaxisX->setLabelsVisible(true);
 
-    //draw y
-    painter->setPen(QPen(Qt::red));
-    for(int i=height/10;i>0;i--) {
-        point[0].setX(0);
-        point[0].setY(i*10);
-        point[1].setX(3);
-        point[1].setY(i*10);
-        painter->drawLine(QPoint(point[0].x(),point[0].y()),QPoint(point[1].x(),point[1].y()));
-    }
-    painter->drawLine(QPoint(0,0),QPoint(0,height));
+    vaxisY=new QValueAxis;
+    vaxisY->setRange(0,MAXAXISY);
+    vaxisY->setTitleText(tr("电压/V"));
+    vaxisY->setLabelFormat(tr("%.2f"));
+    vaxisY->setGridLineVisible(false);
 
-    //draw y point
-    int j=height/10-1;
-    QFont font("Arial",6,QFont::Normal,true);
-    painter->setFont(font);
-    for(int i=-200;i<=height-200;i+=10) {
-        painter->drawText(rect.x()-13,height-(i+200)+3,QString::number((height-3)/10-j-20,10));
-        j--;
-    }
+    saxisX=new QValueAxis;
+    saxisX->setRange(1,MAXAXISX);
+    saxisX->setLabelFormat(tr("%d"));
+    saxisX->setTitleText(tr("时间/s"));
+    saxisX->setGridLineVisible(false);
+    saxisX->setMinorTickCount(4);
+    saxisX->setLabelsVisible(true);
 
-    //draw x point
-    j=1;
-    painter->setFont(font);
-    painter->setPen(QPen(Qt::black));
-    for(int i=10;i<width;i+=10) {
-        painter->drawText(rect.x()+i-3,height+10,QString::number(j,10));
-        j++;
+    saxisY=new QValueAxis;
+    saxisY->setRange(0,MAXAXISY);
+    saxisY->setTitleText(tr("强电流/A"));
+    saxisY->setLabelFormat(tr("%.2f"));
+    saxisY->setGridLineVisible(false);
+
+    waxisX=new QValueAxis;
+    waxisX->setRange(1,MAXAXISX);
+    waxisX->setLabelFormat(tr("%d"));
+    waxisX->setTitleText(tr("时间/s"));
+    waxisX->setGridLineVisible(false);
+    waxisX->setMinorTickCount(4);
+    waxisX->setLabelsVisible(true);
+
+    waxisY=new QValueAxis;
+    waxisY->setRange(0,MAXAXISY);
+    waxisY->setTitleText(tr("弱电流/A"));
+    waxisY->setLabelFormat(tr("%.2f"));
+    waxisY->setGridLineVisible(false);
+}
+
+void MainWindow::setCharts()
+{
+    volatoge.cView->setAxisX(vaxisX,line1);
+    strongelectric.cView->setAxisX(saxisX,line2);
+    weakelectric.cView->setAxisX(waxisX,line3);
+
+    volatoge.cView->setAxisY(vaxisY,line1);
+    strongelectric.cView->setAxisY(saxisY,line2);
+    weakelectric.cView->setAxisY(waxisY,line3);
+
+    volatoge.cView->legend()->hide();    //隐藏颜色图例
+    strongelectric.cView->legend()->hide();
+    weakelectric.cView->legend()->hide();
+}
+
+void MainWindow::customUi()
+{
+    ui->volatoge->setChart(volatoge.cView);
+    ui->strongelectric->setChart(strongelectric.cView);
+    ui->weakelectric->setChart(weakelectric.cView);
+
+    ui->volatoge->setRenderHint(QPainter::Antialiasing);    //抗锯齿渲染
+    ui->strongelectric->setRenderHint(QPainter::Antialiasing);
+    ui->weakelectric->setRenderHint(QPainter::Antialiasing);
+
+    ui->volatoge->setBackgroundRole(QPalette::Dark);
+    ui->volatoge->setAutoFillBackground(true);
+    ui->volatoge->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->volatoge->setFocusPolicy(Qt::StrongFocus);
+
+    ui->strongelectric->setBackgroundRole(QPalette::Dark);
+    ui->strongelectric->setAutoFillBackground(true);
+    ui->strongelectric->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->strongelectric->setFocusPolicy(Qt::StrongFocus);
+
+    ui->weakelectric->setBackgroundRole(QPalette::Dark);
+    ui->weakelectric->setAutoFillBackground(true);
+    ui->weakelectric->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    ui->weakelectric->setFocusPolicy(Qt::StrongFocus);
+
+    ui->comboBox->setBackgroundRole(QPalette::Dark);
+    ui->comboBox->setAutoFillBackground(true);
+}
+
+void MainWindow::loadFileNow()
+{
+    emit readyForRead(volatoge.axiData);
+}
+
+void MainWindow::saveFileNow()
+{
+    emit readyForWrite(volatoge.axiData,strongelectric.axiData,weakelectric.axiData);
+}
+
+void MainWindow::timerEvent(QTimerEvent *)
+{
+    onDraw();
+}
+
+void MainWindow::onDraw()
+{
+    static int xs=0;
+
+    volatoge.axiData.clear();
+    strongelectric.axiData.clear();
+    weakelectric.axiData.clear();
+
+    udpData.addPoint(volatoge.axiData,strongelectric.axiData,weakelectric.axiData);
+    if(!volatoge.axiData.isEmpty()) {
+        volatoge.cView->axisX()->setRange(1+xs,MAXAXISX+xs);  //动态更新x轴坐标
+        strongelectric.cView->axisX()->setRange(1+xs,MAXAXISX+xs);
+        weakelectric.cView->axisX()->setRange(1+xs,MAXAXISX+xs);
+        //ui->volatoge->setChart(volatoge.cView);
+        xs+=MAXSTEP;
+
+        line1->append(volatoge.axiData);
+        line2->append(strongelectric.axiData);
+        line3->append(weakelectric.axiData);
+        //qDebug()<<"line2:"<<strongelectric.axiData[0].x()<<","<<strongelectric.axiData[0].y()<<endl;
+        //qDebug()<<"line3"<<weakelectric.axiData[0].x()<<","<<weakelectric.axiData[0].y()<<endl;
+        (line1->count()>=MAXDRAWPOINTS)?(line1->removePoints(0,MAXREMOVEPOINTS),0):1; //尽量使用条件传送
+        (line2->count()>=MAXDRAWPOINTS)?(line2->removePoints(0,MAXREMOVEPOINTS),0):1;
+        (line3->count()>=MAXDRAWPOINTS)?(line3->removePoints(0,MAXREMOVEPOINTS),0):1;
+
+        ui->volatoge->update();
+        ui->strongelectric->update();
+        ui->weakelectric->update();
     }
 }
 
-void MainWindow::realTimeWave()
+void MainWindow::comboBoxChoseChanged(int index)
 {
-    int startt=0;
-    for(int j=0;j<column;j++) {
-        painter->setPen(QPen(QPen(Qt::green,m_pen_width,Qt::SolidLine)));
-        painter->drawPoint(QPoint(startt,(rect_height-num[j]/valy-D1)));
-        startt+=val;
-        if(startt>WIDTH || num[j]>=65535)
-            break;
-    }
+    udpData.selectVolAData(index);
 }
 
-void MainWindow::closeEvent(QCloseEvent *e)
+void MainWindow::comboBox2ChoseChanged(int index)
 {
-    this->close();
-}*/
+    udpData.selectStrEData(index);
+}
+
+void MainWindow::comboBox3ChoseChanged(int index)
+{
+    udpData.selectWeaEData(index);
+}
 
 MainWindow::~MainWindow()
 {
-    /*delete painter;
-    delete []sum2;
-    delete []sum3;
-    delete []sum4;
-    sum2=NULL;
-    sum3=NULL;
-    sum4=NULL;
-    delete pointt;*/
+    udpDatagram.quit();
+    udpDatagram.wait();
+
+    delete line1;
+    delete line2;
+    delete line3;
+
+    delete vaxisX;
+    delete vaxisY;
+    delete saxisX;
+    delete saxisY;
+    delete waxisX;
+    delete waxisY;
+
     delete ui;
 }
