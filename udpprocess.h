@@ -13,12 +13,16 @@
 #define PORT 49223
 #define STARTPOS 0xFD55
 #define ENDPOS 0x55FF
-#define MAXSTEP 10
-#define MAXAXIS 100
+#define MAXCOUNT 100
+#define MAXAXIS 10
 
 struct dataFormat {
     quint16 vola[16],stre[8],weae[4],vinc[4];
     quint8 ttlout[4];
+};
+
+struct dataCurSelected {
+    quint16 curvola,curstre,curweae;
 };
 
 struct Intr {
@@ -52,9 +56,10 @@ private:
     QUdpSocket *udpSocket;
     QByteArray recvData;
     QList<dataFormat> list;     //数据缓存
-    QList<QPointF> points;
+    QList<dataCurSelected> points;
 
     dataFormat format;
+    dataCurSelected cursel;
     Intr sendData;
     quint8 dataLength;
     quint16 start,end;      //帧头和帧尾

@@ -49,24 +49,26 @@ void UdpProcess::addPoint(QList<QPointF> &vola, QList<QPointF> &stre, QList<QPoi
     */
     //quint32 x=1;
     static unsigned int count=0;
-    dataFormat pack;
+    static double step=0;
+    dataCurSelected pack;
     quint16 v,s,w;
-    quint32 size=list.size();
-    if(!list.isEmpty() && count+MAXSTEP<=size) {
-        for(unsigned int i=count;i<count+MAXSTEP;i++) {
-            //unsigned i=count;
-            pack=list[i];
-            v=pack.vola[volaStatus];
-            s=pack.stre[streStatus];
-            w=pack.weae[weaeStatus];
+    quint32 size=points.size();
+    if(!points.isEmpty() && count+MAXCOUNT<=size) {
+        for(unsigned int i=count;i<count+MAXCOUNT;i++) {
+            pack=points[i];
+            v=pack.curvola;
+            s=pack.curstre;
+            w=pack.curweae;
 
-            vola.push_back(QPointF(i+MAXAXIS,v));
-            stre.push_back(QPointF(i+MAXAXIS,s));
-            weae.push_back(QPointF(i+MAXAXIS,w));
+            vola.push_back(QPointF(step+MAXAXIS,v));
+            stre.push_back(QPointF(step+MAXAXIS,s));
+            weae.push_back(QPointF(step+MAXAXIS,w));
+            step+=0.01;
         }
-        count+=MAXSTEP;
+        count+=MAXCOUNT;
     }
 }
+      `
 
 void UdpProcess::processDatagram()
 {
@@ -178,7 +180,11 @@ QDataStream &operator>>(QDataStream &in,UdpProcess &data)
         in>>data.format.ttlout[i];
     }
     in>>data.end;
-    data.list.append(data.format);
+    data.cursel.curvola=data.format.vola[data.volaStatus];
+    data.cursel.curstre=data.format.stre[data.streStatus];
+    data.cursel.curweae=data.format.weae[data.weaeStatus];
+    data.points.append(data.cursel);
+    //data.list.append(data.format);
     return in;
 }
 

@@ -104,40 +104,41 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::initCharts()
 {
-    line1=new QLineSeries();
-    line1->setPen(QPen(Qt::green,1,Qt::SolidLine));
+    vline=new QLineSeries();
+    vline->setPen(QPen(Qt::green,1,Qt::SolidLine));
     volatoge.cView = new QChart();
    // volatoge.cView->setAnimationOptions(QChart::SeriesAnimations);
-    volatoge.cView->addSeries(line1);
-    volatoge.cView->createDefaultAxes();
+    volatoge.cView->addSeries(vline);
+    //volatoge.cView->createDefaultAxes();
+    vline->setUseOpenGL(true);
 
-
-
-    line2=new QLineSeries();
-    line2->setPen(QPen(Qt::red,1,Qt::SolidLine));
+    sline=new QLineSeries();
+    sline->setPen(QPen(Qt::red,1,Qt::SolidLine));
     strongelectric.cView = new QChart();
     //strongelectric.cView->setAnimationOptions(QChart::SeriesAnimations);  //展示动画效果
-    strongelectric.cView->addSeries(line2);
-    strongelectric.cView->createDefaultAxes();
+    strongelectric.cView->addSeries(sline);
+    //strongelectric.cView->createDefaultAxes();
+    sline->setUseOpenGL(true);
 
-
-    line3=new QLineSeries();
-    line3->setPen(QPen(Qt::blue,1,Qt::SolidLine));
+    wline=new QLineSeries();
+    wline->setPen(QPen(Qt::blue,1,Qt::SolidLine));
     weakelectric.cView = new QChart();
     //weakelectric.cView->setAnimationOptions(QChart::SeriesAnimations);
-    weakelectric.cView->addSeries(line3);
-    weakelectric.cView->createDefaultAxes();
+    weakelectric.cView->addSeries(wline);
+    //weakelectric.cView->createDefaultAxes();
+    wline->setUseOpenGL(true);
 }
 
 void MainWindow::initAxis()
 {
-    vaxisX=new QValueAxis;
+    vaxisX=new QCategoryAxis;
     vaxisX->setRange(1,MAXAXISX);
-    vaxisX->setLabelFormat(tr("%d"));
+    vaxisX->setLabelFormat(tr("%s"));
     vaxisX->setTitleText(tr("时间/s"));
     vaxisX->setGridLineVisible(false);   //显示网格
     vaxisX->setMinorTickCount(4);
     vaxisX->setLabelsVisible(true);
+    vaxisX->setLabelsPosition(QCategoryAxis::AxisLabelsPositionOnValue);
 
     vaxisY=new QValueAxis;
     vaxisY->setRange(0,MAXAXISY);
@@ -145,13 +146,14 @@ void MainWindow::initAxis()
     vaxisY->setLabelFormat(tr("%.2f"));
     vaxisY->setGridLineVisible(false);
 
-    saxisX=new QValueAxis;
+    saxisX=new QCategoryAxis;
     saxisX->setRange(1,MAXAXISX);
-    saxisX->setLabelFormat(tr("%d"));
+    saxisX->setLabelFormat(tr("%s"));
     saxisX->setTitleText(tr("时间/s"));
     saxisX->setGridLineVisible(false);
     saxisX->setMinorTickCount(4);
     saxisX->setLabelsVisible(true);
+    saxisX->setLabelsPosition(QCategoryAxis::AxisLabelsPositionOnValue);
 
     saxisY=new QValueAxis;
     saxisY->setRange(0,MAXAXISY);
@@ -159,13 +161,14 @@ void MainWindow::initAxis()
     saxisY->setLabelFormat(tr("%.2f"));
     saxisY->setGridLineVisible(false);
 
-    waxisX=new QValueAxis;
+    waxisX=new QCategoryAxis;
     waxisX->setRange(1,MAXAXISX);
-    waxisX->setLabelFormat(tr("%d"));
+    waxisX->setLabelFormat(tr("%s"));
     waxisX->setTitleText(tr("时间/s"));
     waxisX->setGridLineVisible(false);
     waxisX->setMinorTickCount(4);
     waxisX->setLabelsVisible(true);
+    waxisX->setLabelsPosition(QCategoryAxis::AxisLabelsPositionOnValue);
 
     waxisY=new QValueAxis;
     waxisY->setRange(0,MAXAXISY);
@@ -176,13 +179,13 @@ void MainWindow::initAxis()
 
 void MainWindow::setCharts()
 {
-    volatoge.cView->setAxisX(vaxisX,line1);
-    strongelectric.cView->setAxisX(saxisX,line2);
-    weakelectric.cView->setAxisX(waxisX,line3);
+    volatoge.cView->setAxisX(vaxisX,vline);
+    strongelectric.cView->setAxisX(saxisX,sline);
+    weakelectric.cView->setAxisX(waxisX,wline);
 
-    volatoge.cView->setAxisY(vaxisY,line1);
-    strongelectric.cView->setAxisY(saxisY,line2);
-    weakelectric.cView->setAxisY(waxisY,line3);
+    volatoge.cView->setAxisY(vaxisY,vline);
+    strongelectric.cView->setAxisY(saxisY,sline);
+    weakelectric.cView->setAxisY(waxisY,wline);
 
     volatoge.cView->legend()->hide();    //隐藏颜色图例
     strongelectric.cView->legend()->hide();
@@ -236,27 +239,39 @@ void MainWindow::timerEvent(QTimerEvent *)
 void MainWindow::onDraw()
 {
     static int xs=0;
-
+    static int tick=0;
     volatoge.axiData.clear();
     strongelectric.axiData.clear();
     weakelectric.axiData.clear();
 
     udpData.addPoint(volatoge.axiData,strongelectric.axiData,weakelectric.axiData);
-    if(!volatoge.axiData.isEmpty()) {
+    if(!volatoge.axiData.isEmpty() && !strongelectric.axiData.isEmpty() && !weakelectric.axiData.isEmpty()) {
         volatoge.cView->axisX()->setRange(1+xs,MAXAXISX+xs);  //动态更新x轴坐标
         strongelectric.cView->axisX()->setRange(1+xs,MAXAXISX+xs);
         weakelectric.cView->axisX()->setRange(1+xs,MAXAXISX+xs);
-        //ui->volatoge->setChart(volatoge.cView);
         xs+=MAXSTEP;
+        QTime time;
 
-        line1->append(volatoge.axiData);
-        line2->append(strongelectric.axiData);
-        line3->append(weakelectric.axiData);
-        //qDebug()<<"line2:"<<strongelectric.axiData[0].x()<<","<<strongelectric.axiData[0].y()<<endl;
-        //qDebug()<<"line3"<<weakelectric.axiData[0].x()<<","<<weakelectric.axiData[0].y()<<endl;
-        (line1->count()>=MAXDRAWPOINTS)?(line1->removePoints(0,MAXREMOVEPOINTS),0):1; //尽量使用条件传送
-        (line2->count()>=MAXDRAWPOINTS)?(line2->removePoints(0,MAXREMOVEPOINTS),0):1;
-        (line3->count()>=MAXDRAWPOINTS)?(line3->removePoints(0,MAXREMOVEPOINTS),0):1;
+        vline->append(volatoge.axiData);
+        sline->append(strongelectric.axiData);
+        wline->append(weakelectric.axiData);
+
+        tick>=5?time=QTime::currentTime(),
+                vaxisX->append(time.toString(),MAXAXISX+xs),
+                saxisX->append(time.toString(),MAXAXISX+xs),
+                waxisX->append(time.toString(),MAXAXISX+xs),
+                tick=0:1;
+        QStringList lst=vaxisX->categoriesLabels();
+        vaxisX->count()>3?vaxisX->remove(lst[0]),0:1;
+        lst=saxisX->categoriesLabels();
+        saxisX->count()>3?saxisX->remove(lst[0]),0:1;
+        lst=waxisX->categoriesLabels();
+        waxisX->count()>3?waxisX->remove(lst[0]),0:1;
+        tick++;
+
+        (vline->count()>=MAXDRAWPOINTS)?(vline->removePoints(0,MAXREMOVEPOINTS),0):1;
+        (sline->count()>=MAXDRAWPOINTS)?(sline->removePoints(0,MAXREMOVEPOINTS),0):1;
+        (wline->count()>=MAXDRAWPOINTS)?(wline->removePoints(0,MAXREMOVEPOINTS),0):1;
 
         ui->volatoge->update();
         ui->strongelectric->update();
@@ -284,9 +299,9 @@ MainWindow::~MainWindow()
     udpDatagram.quit();
     udpDatagram.wait();
 
-    delete line1;
-    delete line2;
-    delete line3;
+    delete vline;
+    delete sline;
+    delete wline;
 
     delete vaxisX;
     delete vaxisY;

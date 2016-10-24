@@ -11,16 +11,16 @@
 #include <QComboBox>
 #include <QList>
 #include <QThread>
+#include <QCategoryAxis>
 #include "udpprocess.h"
 #include "fileoperate.h"
 
 QT_CHARTS_USE_NAMESPACE
 
-#define HISTORY 30
-#define MAXDRAWPOINTS 610
-#define MAXREMOVEPOINTS 600
-#define MAXSTEP 10
-#define MAXAXISX 100
+#define MAXDRAWPOINTS 2000
+#define MAXREMOVEPOINTS 1000
+#define MAXSTEP 1
+#define MAXAXISX 10
 #define MAXAXISY 10
 
 namespace Ui {
@@ -66,8 +66,9 @@ protected:
     //int dataCount;
     //int timeData[HISTORY];
     UdpProcess udpData;
-    QLineSeries *line1,*line2,*line3;
-    QValueAxis *vaxisX,*vaxisY,*saxisX,*saxisY,*waxisX,*waxisY;
+    QLineSeries *vline,*sline,*wline;
+    QValueAxis *vaxisY,*saxisY,*waxisY;
+    QCategoryAxis *vaxisX,*saxisX,*waxisX;
     FileOperate file;
     Ui::MainWindow *ui;
 };
