@@ -8,8 +8,10 @@ QT_CHARTS_USE_NAMESPACE
 
 class ChartView : public QChartView
 {
+    //Q_OBJECT
 public:
-    ChartView(/*QChart *chart,*/ QWidget *parent = 0);
+    explicit ChartView(/*QChart *chart,*/ QWidget *parent = 0);
+    ~ChartView();
 
 protected:
     bool viewportEvent(QEvent *event);

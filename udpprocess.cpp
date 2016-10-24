@@ -68,7 +68,6 @@ void UdpProcess::addPoint(QList<QPointF> &vola, QList<QPointF> &stre, QList<QPoi
         count+=MAXCOUNT;
     }
 }
-      `
 
 void UdpProcess::processDatagram()
 {

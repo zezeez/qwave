@@ -1,7 +1,7 @@
 #include "chartview.h"
 #include <QtGui/QMouseEvent>
 
-ChartView::ChartView(QWidget *parent) :
+ChartView::ChartView(QWidget *parent):
     QChartView(/*chart, */parent),
     m_isTouching(false)
 {
@@ -75,4 +75,9 @@ void ChartView::keyPressEvent(QKeyEvent *event)
         QGraphicsView::keyPressEvent(event);
         break;
     }
+}
+
+ChartView::~ChartView()
+{
+
 }
