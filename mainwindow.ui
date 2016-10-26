@@ -14,8 +14,8 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QFormLayout" name="formLayout">
-    <item row="0" column="1">
+   <layout class="QVBoxLayout" name="verticalLayout_8">
+    <item>
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -60,7 +60,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout_7">
         <property name="leftMargin">
          <number>0</number>
@@ -449,21 +449,6 @@
      </widget>
     </item>
    </layout>
-   <zorder>loadfile</zorder>
-   <zorder>lvolatoge</zorder>
-   <zorder>comboBox_2</zorder>
-   <zorder>close</zorder>
-   <zorder>comboBox</zorder>
-   <zorder>savefile</zorder>
-   <zorder>lstrele</zorder>
-   <zorder>layoutWidget</zorder>
-   <zorder>lsendintr</zorder>
-   <zorder>comboBox_4</zorder>
-   <zorder>lweaele</zorder>
-   <zorder>comboBox_3</zorder>
-   <zorder>verticalSpacer_2</zorder>
-   <zorder>splitter</zorder>
-   <zorder>splitter</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
