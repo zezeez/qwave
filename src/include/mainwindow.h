@@ -11,9 +11,11 @@
 #include <QComboBox>
 #include <QList>
 #include <QThread>
+#include <QUdpSocket>
 #include <QCategoryAxis>
 #include "udpprocess.h"
 #include "fileoperate.h"
+#include "udpvincdata.h"
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -21,11 +23,12 @@ QT_CHARTS_USE_NAMESPACE
 #define MAXREMOVEPOINTS 1000
 #define MAXSTEP 1
 #define MAXAXISX 10
-#define MAXAXISY 10
+#define MAXAXISY 20
 
 namespace Ui {
 class MainWindow;
 }
+
 
 class MainWindow : public QMainWindow
 {
@@ -43,34 +46,38 @@ private:
 protected:
     void timerEvent(QTimerEvent *);
     void showWave();
-signals:
-    void readyForWrite(QList<QPointF> &,QList<QPointF> &,QList<QPointF> &);
-    //void readyForDraw(QList<QPointF> &/*,QLineSeries &,MainWindow &*/);
-    void readyForRead(QList<QPointF> &);
+public slots:
+    //void setClientInfo(QString,quint16);
+    void resetSaveFileButtonStatus(int);
 private slots:
     void comboBoxChoseChanged(int);
     void comboBox2ChoseChanged(int);
     void comboBox3ChoseChanged(int);
     void onDraw();      //绘制点坐标
+    void sendIntr(int);
+    void curTunelChange(int);
     //void loadFile(QList<QPointF> &);
-    void saveFileNow();
-    void loadFileNow();
+    //void saveFileNow();
+    //void loadFileNow();
 private:
-    QThread udpDatagram;
+    QThread udpDatagram,recvVinc;
 protected:
     struct showType{
         QChart *cView;
         QList<QPointF> axiData;
     };
     showType volatoge,strongelectric,weakelectric;      //电压 强电流 弱电流
-    //int dataCount;
-    //int timeData[HISTORY];
-    UdpProcess udpData;
+
+    //UdpVinCData vinc;
+    QUdpSocket *udpSocket;
+    UdpProcess *udpData;
     QLineSeries *vline,*sline,*wline;
     QValueAxis *vaxisY,*saxisY,*waxisY;
     QCategoryAxis *vaxisX,*saxisX,*waxisX;
     FileOperate file;
     Ui::MainWindow *ui;
+//private:
+    //friend QDataStream &operator<<(QDataStream &,const MainWindow &);
 };
 
 #endif // MAINWINDOW_H

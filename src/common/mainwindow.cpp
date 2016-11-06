@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <qdebug.h>
 #include <stdlib.h>
@@ -23,65 +23,30 @@ MainWindow::MainWindow(QWidget *parent) :
     setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     setFocusPolicy(Qt::StrongFocus);
 
-    //QChart *chart;
-
-    /*ui->lhLayout->addWidget(ui->label);
-    ui->lhLayout->addWidget(ui->volatoge);
-    ui->lhLayout->addWidget(ui->label_4);
-    ui->lhLayout->addWidget(ui->label_2);
-    ui->lhLayout->addWidget(ui->strongelectric);
-    ui->lhLayout->addWidget(ui->label_5);
-    ui->lhLayout->addWidget(ui->label_3);
-    ui->lhLayout->addWidget(ui->weakelectric);
-    ui->lhLayout->addWidget(ui->label_6);
-
-    ui->rhLayout->addWidget(ui->label_7);
-    ui->rhLayout->addWidget(ui->comboBox);
-    ui->rhLayout->addWidget(ui->label_8);
-    ui->rhLayout->addWidget(ui->comboBox_2);
-    ui->rhLayout->addWidget(ui->label_9);
-    ui->rhLayout->addWidget(ui->comboBox_3);
-
-    ui->rhLayout->addWidget(ui->loadfile);
-    ui->rhLayout->addWidget(ui->savefile);
-    ui->rhLayout->addWidget(ui->close);
-
-    ui->vLayout->addLayout(ui->lhLayout);
-    ui->vLayout->addLayout(ui->rhLayout);*/
-
-
-    //chart = new QChart();
-    /*volatoge.cView = ui->volatoge;
-    strongelectric.cView = ui->strongelectric;
-    weakelectric.cView = ui->weakelectric;*/
-
     initCharts();
     initAxis();
     setCharts();
     customUi();
+
+    udpData=new UdpProcess;
+    udpSocket=new QUdpSocket(this);
+    
+
+    //qDebug()<<ui->comboBox_5->currentIndex()<<endl;
     //volatoge.cView->axisX()->setRange(1,10);
     //volatoge.cView->axisY()->setRange(1,10);
-
-    //ui->volatoge->geometry();
-    //ui->strongelectric->geometry();
-    //ui->weakelectric->geometry();
-
-    /*for(int i=0;i<10;i++) {
-        line->append(i,sin(i));
-    }*/
-    /*QChart *chart=new QChart();
-    chart->addSeries(line);
-    chart->createDefaultAxes();
-    ui->volatoge->setChart(chart);*/
 
     connect(ui->comboBox,SIGNAL(currentIndexChanged(int)),this,SLOT(comboBoxChoseChanged(int)));
     connect(ui->comboBox_2,SIGNAL(currentIndexChanged(int)),this,SLOT(comboBox2ChoseChanged(int)));
     connect(ui->comboBox_3,SIGNAL(currentIndexChanged(int)),this,SLOT(comboBox3ChoseChanged(int)));
-    connect(ui->comboBox_4,SIGNAL(currentIndexChanged(int)),&udpData,SLOT(sendIntr(int)));
-    connect(ui->loadfile,&QPushButton::clicked,this,&MainWindow::loadFileNow);
-    connect(ui->savefile,&QPushButton::clicked,this,&MainWindow::saveFileNow);
-    connect(this,&MainWindow::readyForWrite,&file,&FileOperate::saveFile);
-    connect(this,&MainWindow::readyForRead,&file,&FileOperate::loadFile);
+    connect(ui->comboBox_4,SIGNAL(activated(int)),this,SLOT(sendIntr(int)));
+    connect(ui->comboBox_5,SIGNAL(currentIndexChanged(int)),this,SLOT(curTunelChange(int)));
+    connect(ui->loadfile,&QPushButton::clicked,udpData,&UdpProcess::forLoadFile);
+    connect(ui->savefile,&QPushButton::clicked,udpData,&UdpProcess::forSaveFile);
+    //connect(udpData,&UdpProcess::readyForRead,&file,&FileOperate::loadFile);
+    //connect(udpData,&UdpProcess::readyForWrite,&file,&FileOperate::saveFile);
+    //connect(udpData,&UdpProcess::updateClientInfo,this,&MainWindow::setClientInfo);
+    connect(udpData,&UdpProcess::resetSaveFileButtonStatus,this,&MainWindow::resetSaveFileButtonStatus);
     connect(ui->close,SIGNAL(clicked(bool)),this,SLOT(close()));
 
     //chart = new QChart
@@ -90,14 +55,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //drawCurve *draw=new drawCurve;
     //UdpProcess *pcs=new UdpProcess;
-    udpData.moveToThread(&udpDatagram);
-    //connect(&udpDatagram,&QThread::finished,&udpData,&QObject::deleteLater);
     //connect(this,&MainWindow::readyForDraw,draw,&drawCurve::onDraw);
     //connect(draw,&drawCurve::readyDraw,this,&MainWindow::onDraw);
-    udpDatagram.start();
+    /*udpData->moveToThread(&udpDatagram);  //使用新线程接收下位机的udp数据
+    connect(&udpDatagram,&QThread::finished,udpData,&QObject::deleteLater);
+    udpDatagram.start();*/
 
-    //for ( int i = 0; i < HISTORY; i++ )
-        //timeData[HISTORY - 1 - i] = i;
+    //vinc.moveToThread(&recvVinc);  //单独接收vinc数据
+    //connect(&recvVinc,&QThread::finished,&vinc,&QObject::deleteLater);
+    //recvVinc.start();
 
     startTimer(1000);  //1 second
 }
@@ -129,12 +95,12 @@ void MainWindow::initCharts()
     wline->setUseOpenGL(true);
 }
 
-void MainWindow::initAxis()
+void MainWindow::initAxis()  //设置x轴和y轴的刻度值
 {
     vaxisX=new QCategoryAxis;
     vaxisX->setRange(1,MAXAXISX);
     vaxisX->setLabelFormat(tr("%s"));
-    vaxisX->setTitleText(tr("时间/s"));
+    vaxisX->setTitleText(QStringLiteral("时间/s"));
     vaxisX->setGridLineVisible(false);   //显示网格
     vaxisX->setMinorTickCount(4);
     vaxisX->setLabelsVisible(true);
@@ -142,14 +108,14 @@ void MainWindow::initAxis()
 
     vaxisY=new QValueAxis;
     vaxisY->setRange(0,MAXAXISY);
-    vaxisY->setTitleText(tr("电压/V"));
+    vaxisY->setTitleText(QStringLiteral("电压/V"));
     vaxisY->setLabelFormat(tr("%.2f"));
     vaxisY->setGridLineVisible(false);
 
     saxisX=new QCategoryAxis;
     saxisX->setRange(1,MAXAXISX);
     saxisX->setLabelFormat(tr("%s"));
-    saxisX->setTitleText(tr("时间/s"));
+    saxisX->setTitleText(QStringLiteral("时间/s"));
     saxisX->setGridLineVisible(false);
     saxisX->setMinorTickCount(4);
     saxisX->setLabelsVisible(true);
@@ -157,14 +123,14 @@ void MainWindow::initAxis()
 
     saxisY=new QValueAxis;
     saxisY->setRange(0,MAXAXISY);
-    saxisY->setTitleText(tr("强电流/A"));
+    saxisY->setTitleText(QStringLiteral("强电流/A"));
     saxisY->setLabelFormat(tr("%.2f"));
     saxisY->setGridLineVisible(false);
 
     waxisX=new QCategoryAxis;
     waxisX->setRange(1,MAXAXISX);
     waxisX->setLabelFormat(tr("%s"));
-    waxisX->setTitleText(tr("时间/s"));
+    waxisX->setTitleText(QStringLiteral("时间/s"));
     waxisX->setGridLineVisible(false);
     waxisX->setMinorTickCount(4);
     waxisX->setLabelsVisible(true);
@@ -172,7 +138,7 @@ void MainWindow::initAxis()
 
     waxisY=new QValueAxis;
     waxisY->setRange(0,MAXAXISY);
-    waxisY->setTitleText(tr("弱电流/A"));
+    waxisY->setTitleText(QStringLiteral("弱电流/A"));
     waxisY->setLabelFormat(tr("%.2f"));
     waxisY->setGridLineVisible(false);
 }
@@ -192,7 +158,7 @@ void MainWindow::setCharts()
     weakelectric.cView->legend()->hide();
 }
 
-void MainWindow::customUi()
+void MainWindow::customUi()  //自定义ui
 {
     ui->volatoge->setChart(volatoge.cView);
     ui->strongelectric->setChart(strongelectric.cView);
@@ -221,7 +187,7 @@ void MainWindow::customUi()
     ui->comboBox->setAutoFillBackground(true);
 }
 
-void MainWindow::loadFileNow()
+/*void MainWindow::loadFileNow()
 {
     emit readyForRead(volatoge.axiData);
 }
@@ -229,7 +195,7 @@ void MainWindow::loadFileNow()
 void MainWindow::saveFileNow()
 {
     emit readyForWrite(volatoge.axiData,strongelectric.axiData,weakelectric.axiData);
-}
+}*/
 
 void MainWindow::timerEvent(QTimerEvent *)
 {
@@ -244,7 +210,7 @@ void MainWindow::onDraw()
     strongelectric.axiData.clear();
     weakelectric.axiData.clear();
 
-    udpData.addPoint(volatoge.axiData,strongelectric.axiData,weakelectric.axiData);
+    udpData->addPoint(volatoge.axiData,strongelectric.axiData,weakelectric.axiData);
     if(!volatoge.axiData.isEmpty() && !strongelectric.axiData.isEmpty() && !weakelectric.axiData.isEmpty()) {
         volatoge.cView->axisX()->setRange(1+xs,MAXAXISX+xs);  //动态更新x轴坐标
         strongelectric.cView->axisX()->setRange(1+xs,MAXAXISX+xs);
@@ -279,19 +245,54 @@ void MainWindow::onDraw()
     }
 }
 
+/*void MainWindow::setClientInfo(QString address, quint16 port)
+{
+    //senderAddress=address;
+    senderAddress.setAddress(address);
+    senderPort=port;
+    //qDebug()<<senderAddress<<" "<<senderPort<<endl;
+}*/
+
 void MainWindow::comboBoxChoseChanged(int index)
 {
-    udpData.selectVolAData(index);
+    vline->clear();
+    udpData->selectVolAData(index);
 }
 
 void MainWindow::comboBox2ChoseChanged(int index)
 {
-    udpData.selectStrEData(index);
+    sline->clear();
+    udpData->selectStrEData(index);
 }
 
 void MainWindow::comboBox3ChoseChanged(int index)
 {
-    udpData.selectWeaEData(index);
+    wline->clear();
+    udpData->selectWeaEData(index);
+}
+
+void MainWindow::sendIntr(int index)
+{
+    udpData->sendIntr(index);
+}
+
+void MainWindow::curTunelChange(int tunel)
+{
+    udpData->curTunelChange(tunel);
+}
+
+void MainWindow::resetSaveFileButtonStatus(int status)
+{
+    switch(status) {
+    case 0:
+        ui->savefile->setText(QStringLiteral("开始记录"));
+        break;
+    case 1:
+        ui->savefile->setText(QStringLiteral("保存"));
+        break;
+    default:
+        break;
+    }
 }
 
 MainWindow::~MainWindow()
