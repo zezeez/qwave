@@ -1,4 +1,4 @@
-#include "udpprocess.h"
+#include "../include/udpprocess.h"
 
 UdpProcess::UdpProcess(QUdpSocket *parent): QObject(parent)
 {

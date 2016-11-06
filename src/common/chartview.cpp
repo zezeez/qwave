@@ -1,4 +1,4 @@
-#include "chartview.h"
+#include "../include/chartview.h"
 #include <QtGui/QMouseEvent>
 
 ChartView::ChartView(QWidget *parent):

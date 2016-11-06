@@ -1,4 +1,4 @@
-#include "writevincdata.h"
+#include "../include/writevincdata.h"
 
 QTextStream &operator<<(QTextStream &,const vincData &);
 

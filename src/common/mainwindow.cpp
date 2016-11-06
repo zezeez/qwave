@@ -1,4 +1,4 @@
-﻿#include "mainwindow.h"
+﻿#include "../include/mainwindow.h"
 #include "ui_mainwindow.h"
 #include <qdebug.h>
 #include <stdlib.h>
@@ -6,7 +6,7 @@
 #include <fstream>
 #include <QFileDialog>
 #include <QMessageBox>
-#include "udpprocess.h"
+#include "../include/udpprocess.h"
 #include <QtCharts/QChartView>
 #include <QtCharts/QLineSeries>
 

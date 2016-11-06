@@ -1,4 +1,4 @@
-#include "udpvincdata.h"
+#include "../include/udpvincdata.h"
 
 UdpVinCData::UdpVinCData(QObject *parent): QObject(parent)
 {
